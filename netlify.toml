@@ -1,0 +1,10 @@
+[build]
+  command = "npm install"
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[functions.broadcast-worker]
+  background = true
