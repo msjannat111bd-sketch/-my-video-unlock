@@ -4,14 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin Panel</title>
+
 <style>
-body{margin:0;background:#080b12;color:white;font-family:Arial;padding:15px}
-.box{max-width:600px;margin:auto}
-.card{background:#121927;padding:18px;border-radius:16px;margin-bottom:15px}
-input,textarea,select,button{width:100%;padding:13px;margin:7px 0;border-radius:10px;box-sizing:border-box}
-input,textarea,select{background:#080d17;color:white;border:1px solid #334155}
-button{background:#6857ff;color:white;border:0;font-weight:bold}
-h1{margin-top:5px}
+body{
+margin:0;
+background:#080b12;
+color:white;
+font-family:Arial;
+padding:15px
+}
+
+.box{
+max-width:600px;
+margin:auto
+}
+
+.card{
+background:#121827;
+padding:18px;
+border-radius:16px;
+margin-bottom:15px
+}
+
+input,select,textarea,button{
+width:100%;
+padding:13px;
+margin:7px 0;
+box-sizing:border-box;
+border-radius:10px
+}
+
+input,select,textarea{
+background:#080d17;
+color:white;
+border:1px solid #334155
+}
+
+button{
+background:#6857ff;
+color:white;
+border:0;
+font-weight:bold
+}
+
+.video{
+border-top:1px solid #334155;
+padding:12px 0
+}
 </style>
 </head>
 
@@ -19,29 +58,34 @@ h1{margin-top:5px}
 
 <div class="box">
 
-<div class="card">
+<div class="card" id="login">
 
-<h1>🎬 Admin Panel</h1>
+<h1>🔐 Admin Panel</h1>
 
-<p>My Video Unlock</p>
+<input
+id="pass"
+type="password"
+placeholder="Admin Password"
+>
 
-<input id="password" type="password" placeholder="Admin Password">
-
-<button onclick="login()">🔐 Login</button>
-
-<p id="msg"></p>
+<button onclick="openPanel()">
+Login
+</button>
 
 </div>
+
 
 <div id="panel" style="display:none">
 
 <div class="card">
 
+<h1>🎬 My Video Unlock</h1>
+
 <h2>➕ Add Video</h2>
 
 <input id="title" placeholder="Video Title">
 
-<select id="category">
+<select id="cat">
 <option>Movies</option>
 <option>Dramas</option>
 <option>Web Series</option>
@@ -50,94 +94,247 @@ h1{margin-top:5px}
 
 <input id="duration" placeholder="Duration">
 
-<input id="thumbnail" placeholder="Main Thumbnail URL">
+<input id="thumb" placeholder="Thumbnail URL">
 
-<input id="screenshot" placeholder="Screenshot URL">
+<input id="shot" placeholder="Screenshot URL">
 
-<textarea id="description" placeholder="Description"></textarea>
+<textarea
+id="desc"
+placeholder="Description"
+></textarea>
 
-<input id="link" placeholder="Telegram File Share Link">
+<input
+id="link"
+placeholder="Telegram File Share Link"
+>
 
-<button onclick="save()">💾 Save Video</button>
-
-<p id="save"></p>
+<button onclick="addVideo()">
+💾 Add Video
+</button>
 
 </div>
+
 
 <div class="card">
 
-<h2>📊 Dashboard</h2>
+<h2>📚 Videos</h2>
 
-<p>Total Videos: <b id="total">0</b></p>
+<input
+id="search"
+placeholder="🔎 Search"
+oninput="showVideos()"
+>
+
+<div id="videos"></div>
 
 </div>
 
 </div>
 
 </div>
+
 
 <script>
 
 let videos=[];
 
-function login(){
 
-let password=
-document.getElementById("password").value;
+/* LOGIN */
 
-if(!password){
+function openPanel(){
 
-document.getElementById("msg").innerText=
-"Password দিন";
+let p=document.getElementById("pass").value;
+
+if(!p){
+
+alert("Password দিন");
 
 return;
 
 }
 
-document.querySelector(".box > .card")
+document.getElementById("login")
 .style.display="none";
 
 document.getElementById("panel")
 .style.display="block";
 
+showVideos();
+
 }
 
-function save(){
 
-let video={
+/* ADD */
 
-title:document.getElementById("title").value,
+function addVideo(){
 
-category:document.getElementById("category").value,
+let title=
+document.getElementById("title").value;
 
-duration:document.getElementById("duration").value,
+if(!title){
 
-thumbnail:document.getElementById("thumbnail").value,
-
-screenshot:document.getElementById("screenshot").value,
-
-description:document.getElementById("description").value,
-
-link:document.getElementById("link").value
-
-};
-
-if(!video.title){
-
-document.getElementById("save").innerText=
-"❌ Title দিন";
+alert("Title দিন");
 
 return;
 
 }
 
+let video={
+
+title:title,
+
+cat:document.getElementById("cat").value,
+
+duration:document.getElementById("duration").value,
+
+thumb:document.getElementById("thumb").value,
+
+shot:document.getElementById("shot").value,
+
+desc:document.getElementById("desc").value,
+
+link:document.getElementById("link").value
+
+};
+
 videos.push(video);
 
-document.getElementById("total").innerText=
-videos.length;
+localStorage.setItem(
+"videos",
+JSON.stringify(videos)
+);
 
-document.getElementById("save").innerText=
-"✅ Video যোগ হয়েছে";
+alert("✅ Video যোগ হয়েছে");
+
+clearForm();
+
+showVideos();
+
+}
+
+
+/* SHOW */
+
+function showVideos(){
+
+videos=
+JSON.parse(
+localStorage.getItem("videos") || "[]"
+);
+
+let q=
+(document.getElementById("search")?.value || "")
+.toLowerCase();
+
+let box=
+document.getElementById("videos");
+
+box.innerHTML="";
+
+videos.forEach((v,i)=>{
+
+if(!v.title.toLowerCase().includes(q))
+return;
+
+box.innerHTML+=`
+
+<div class="video">
+
+<b>🎬 ${v.title}</b>
+
+<p>
+📂 ${v.cat}
+<br>
+⏱️ ${v.duration}
+</p>
+
+<button onclick="editVideo(${i})">
+✏️ Edit
+</button>
+
+<button
+onclick="deleteVideo(${i})"
+style="background:#d33"
+>
+🗑️ Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* DELETE */
+
+function deleteVideo(i){
+
+if(confirm("Delete করবেন?")){
+
+videos.splice(i,1);
+
+localStorage.setItem(
+"videos",
+JSON.stringify(videos)
+);
+
+showVideos();
+
+}
+
+}
+
+
+/* EDIT */
+
+function editVideo(i){
+
+let v=videos[i];
+
+document.getElementById("title").value=v.title;
+
+document.getElementById("cat").value=v.cat;
+
+document.getElementById("duration").value=v.duration;
+
+document.getElementById("thumb").value=v.thumb;
+
+document.getElementById("shot").value=v.shot;
+
+document.getElementById("desc").value=v.desc;
+
+document.getElementById("link").value=v.link;
+
+videos.splice(i,1);
+
+localStorage.setItem(
+"videos",
+JSON.stringify(videos)
+);
+
+showVideos();
+
+}
+
+
+/* CLEAR */
+
+function clearForm(){
+
+document.getElementById("title").value="";
+
+document.getElementById("duration").value="";
+
+document.getElementById("thumb").value="";
+
+document.getElementById("shot").value="";
+
+document.getElementById("desc").value="";
+
+document.getElementById("link").value="";
 
 }
 
