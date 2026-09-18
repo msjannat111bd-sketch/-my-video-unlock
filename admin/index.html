@@ -1,1 +1,147 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel</title>
+<style>
+body{margin:0;background:#080b12;color:white;font-family:Arial;padding:15px}
+.box{max-width:600px;margin:auto}
+.card{background:#121927;padding:18px;border-radius:16px;margin-bottom:15px}
+input,textarea,select,button{width:100%;padding:13px;margin:7px 0;border-radius:10px;box-sizing:border-box}
+input,textarea,select{background:#080d17;color:white;border:1px solid #334155}
+button{background:#6857ff;color:white;border:0;font-weight:bold}
+h1{margin-top:5px}
+</style>
+</head>
 
+<body>
+
+<div class="box">
+
+<div class="card">
+
+<h1>🎬 Admin Panel</h1>
+
+<p>My Video Unlock</p>
+
+<input id="password" type="password" placeholder="Admin Password">
+
+<button onclick="login()">🔐 Login</button>
+
+<p id="msg"></p>
+
+</div>
+
+<div id="panel" style="display:none">
+
+<div class="card">
+
+<h2>➕ Add Video</h2>
+
+<input id="title" placeholder="Video Title">
+
+<select id="category">
+<option>Movies</option>
+<option>Dramas</option>
+<option>Web Series</option>
+<option>Others</option>
+</select>
+
+<input id="duration" placeholder="Duration">
+
+<input id="thumbnail" placeholder="Main Thumbnail URL">
+
+<input id="screenshot" placeholder="Screenshot URL">
+
+<textarea id="description" placeholder="Description"></textarea>
+
+<input id="link" placeholder="Telegram File Share Link">
+
+<button onclick="save()">💾 Save Video</button>
+
+<p id="save"></p>
+
+</div>
+
+<div class="card">
+
+<h2>📊 Dashboard</h2>
+
+<p>Total Videos: <b id="total">0</b></p>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let videos=[];
+
+function login(){
+
+let password=
+document.getElementById("password").value;
+
+if(!password){
+
+document.getElementById("msg").innerText=
+"Password দিন";
+
+return;
+
+}
+
+document.querySelector(".box > .card")
+.style.display="none";
+
+document.getElementById("panel")
+.style.display="block";
+
+}
+
+function save(){
+
+let video={
+
+title:document.getElementById("title").value,
+
+category:document.getElementById("category").value,
+
+duration:document.getElementById("duration").value,
+
+thumbnail:document.getElementById("thumbnail").value,
+
+screenshot:document.getElementById("screenshot").value,
+
+description:document.getElementById("description").value,
+
+link:document.getElementById("link").value
+
+};
+
+if(!video.title){
+
+document.getElementById("save").innerText=
+"❌ Title দিন";
+
+return;
+
+}
+
+videos.push(video);
+
+document.getElementById("total").innerText=
+videos.length;
+
+document.getElementById("save").innerText=
+"✅ Video যোগ হয়েছে";
+
+}
+
+</script>
+
+</body>
+</html>
